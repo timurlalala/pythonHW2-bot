@@ -11,25 +11,9 @@ rt = Router()
 @rt.message(Command("check_progress"), StateFilter(SetProfile.profile_is_set))
 async def check_progress(message: Message, state: FSMContext):
     state_data = await state.get_data()
-    ans = UsageMessageTemplates.CHECK_PROGRESS.format(**state_data)
-    await message.answer(ans)
-
-
-@rt.message(Command("log_water"), StateFilter(SetProfile.profile_is_set))
-async def log_water(message: Message, state: FSMContext):
-    msg_split = message.text.split()
-    amount = int(msg_split[1]) if len(msg_split) > 1 else None
-    if not amount:
-        await message.answer(UsageMessageTemplates.LOG_WATER_ERROR)
-        return
-
-    state_data = await state.get_data()
-    state_data['consumed_water'] += amount
-
-    await state.update_data(state_data)
     balance_calories = state_data['consumed_calories'] - state_data['burned_calories']
     water_left = state_data['target_water'] - state_data['consumed_water']
-    ans = UsageMessageTemplates.LOG_WATER.format(amount=amount, balance_calories=balance_calories, water_left=water_left, **state_data)
+    ans = UsageMessageTemplates.CHECK_PROGRESS.format(balance_calories=balance_calories, water_left=water_left, **state_data)
     await message.answer(ans)
 
 
@@ -132,5 +116,8 @@ async def new_day(message: Message, state: FSMContext):
     })
     await state.update_data(state_data)
     ans = UsageMessageTemplates.NEW_DAY
-    ans += UsageMessageTemplates.CHECK_PROGRESS.format(**state_data)
+    balance_calories = state_data['consumed_calories'] - state_data['burned_calories']
+    water_left = state_data['target_water'] - state_data['consumed_water']
+    ans += UsageMessageTemplates.CHECK_PROGRESS.format(balance_calories=balance_calories, water_left=water_left,
+                                                      **state_data)
     await message.answer(ans)
