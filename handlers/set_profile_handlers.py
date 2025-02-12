@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from states import *
 from templates import SetProfileMessageTemplates
 from keyboards import *
-from handlers.utils import generate_profile_summary
+from handlers.utils import *
 
 rt = Router()
 
@@ -73,10 +73,16 @@ async def set_activity_rate(message: Message, state: FSMContext):
 
 @rt.message(StateFilter(SetProfile.setting_city))
 async def set_city(message: Message, state: FSMContext):
-    # TODO Сделать проверку города
+    if not await acheck_city(message.text):
+        await message.answer(SetProfileMessageTemplates.CITY_ERROR.format(city_name=message.text))
+        return
     await state.update_data({'city': message.text})
-
     state_data = await state.get_data()
+
+    temperature = await get_city_temperature(message.text)
+    water = state_data['weight'] * 30 + 500 * int(temperature > 25 if temperature else 0)
+    await state.update_data({'target_water': water})
+
     if (act_rate:=state_data['activity_rate']) < 120:
         act_level = 1.2
     elif act_rate < 240:
@@ -87,12 +93,11 @@ async def set_city(message: Message, state: FSMContext):
         act_level = 1.8
     calories = (10*state_data['weight'] + 6.25*state_data['height'] - 5*state_data['age']) * act_level
     await state.update_data({'target_calories': calories})
+
     await message.answer(
         SetProfileMessageTemplates.TARGET_CALORIES_CALCULATED.format(calories=calories),
         reply_markup=target_confirmation_keyboard, )
     await state.set_state(SetProfile.confirming_target_calories)
-
-#TODO Разобраться с ветвлением
 
 @rt.message(StateFilter(SetProfile.confirming_target_calories), F.text == 'Ввести свою цель')
 async def request_calories(message: Message, state: FSMContext):
@@ -113,6 +118,11 @@ async def set_calories(message: Message, state: FSMContext):
     state_data = await state.get_data()
     await message.answer(SetProfileMessageTemplates.SETTING_DONE + generate_profile_summary(state_data))
     await state.set_state(SetProfile.profile_is_set)
+    await state.update_data({
+        'consumed_water': 0,
+        'consumed_calories': 0,
+        'burned_calories': 0
+    })
 
 @rt.message(StateFilter(SetProfile.confirming_target_calories), F.text == 'Сохранить')
 async def request_calories(message: Message, state: FSMContext):
@@ -122,14 +132,14 @@ async def request_calories(message: Message, state: FSMContext):
     state_data = await state.get_data()
     await message.answer(SetProfileMessageTemplates.SETTING_DONE + generate_profile_summary(state_data))
     await state.set_state(SetProfile.profile_is_set)
+    await state.update_data({
+        'consumed_water': 0,
+        'consumed_calories': 0,
+        'burned_calories': 0
+    })
 
 @rt.message(Command('show_profile'))
 async def show_profile(message: Message, state: FSMContext):
 
     state_data = await state.get_data()
     await message.answer("Ваш профиль: " + generate_profile_summary(state_data))
-
-
-
-
-# TODO Сделать редактирование профиля

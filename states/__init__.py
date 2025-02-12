@@ -11,3 +11,5 @@ class SetProfile(StatesGroup):
     confirming_target_calories = State()
     setting_target_calories = State()
     profile_is_set = State()
+
+    waiting_for_food_amount = State()

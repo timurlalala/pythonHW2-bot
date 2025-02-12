@@ -17,7 +17,7 @@ class SetProfileMessageTemplates:
     ACTIVITY_ERROR = "Активность может быть числом до 1000 и измеряется в минутах. Например, '60'. Попробуйте еще раз."
 
     CITY_REQUEST = "В каком городе вы проживаете?"
-    # CITY_CONFIRM = "В базе нашелся город {0}. Подтвердить?"
+    CITY_ERROR = "Города {city_name} нет в базе данных. Проверьте, что название города введено корректно."
 
     TARGET_CALORIES_CALCULATED = (
         "Мы рассчитали оптимальную калорийность Вашего рациона для поддержания веса: {calories} ккал/сутки. "
@@ -37,5 +37,53 @@ class SetProfileMessageTemplates:
         "\nВозраст: {age} лет"
         "\nАктивность: {activity_rate} минут в день"
         "\nГород: {city}"
+        "\nНорма потребления воды: {target_water} мл"
         "\nЦель калорийности рациона: {target_calories} ккал"
     )
+
+class UsageMessageTemplates:
+    CHECK_PROGRESS = (
+        "📊 Прогресс:\nВода:\n- Выпито: {consumed_water} мл из {target_water} мл."
+        "\n- Осталось: {target_water-consumed_water} мл.\n\n"
+        "Калории:\n- Потреблено: {consumed_calories} ккал из {target_calories} ккал.\n"
+        "- Сожжено: {burned_calories} ккал.\n- Баланс: {consumed_calories-burned_calories} ккал."
+    )
+
+    LOG_WATER = (
+        "Выпито {amount} мл воды. Осталось до нормы: {target_water-consumed_water} мл."
+    )
+    LOG_WATER_ERROR = (
+        "Неверный формат ввода. Введите количество выпитой воды в миллилитрах.\n"
+        "Например /log_water 200"
+    )
+
+    LOG_FOOD_ASK_AMOUNT = (
+        "{food_name} — {norm_calories} ккал на 100 г. Сколько грамм вы съели?"
+    )
+    LOG_FOOD_SAVED = (
+        "Записано {food_cal_calculated} ккал."
+    )
+    LOG_FOOD_NO_FOOD = (
+        "Продукт не найден. Пожалуйста, уточните название или попробуйте другой продукт.\n"
+        "Например, /log_food банан"
+    )
+    LOG_FOOD_WRONG_AMOUNT = (
+        "Неверный формат ввода. Введите количество граммов продукта.\n"
+        "Например 150"
+    )
+
+    LOG_WORKOUT_WRONG_FORMAT = (
+        "Неверный формат ввода. Пожалуйста, используйте следующий формат:\n"
+        "/log_workout <тип_тренировки или МЕТ> <продолжительность_в_минутах>\n"
+        "Например: /log_workout бег 30 или /log_workout 8 30"
+    )
+    LOG_WORKOUT_UNKNOWN_EXERCISE = (
+        "Тип тренировки не распознан. Пожалуйста, укажите МЕТ или введите значение из предложенного списка:\n{workouts}"
+        "Например: /log_workout бег 30 или /log_workout 8 30"
+    )
+    LOG_WORKOUT_SAVED = (
+        "Бег {minutes} минут — {calories_burnt} ккал. "
+    )
+    LOG_WORKOUT_ADD_WATER = "\nДополнительно: выпейте {water} мл воды."
+
+    NEW_DAY = "Доброе утро! Начнем здоровый день!"
