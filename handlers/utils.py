@@ -9,7 +9,7 @@ def generate_profile_summary(data: Dict[str, Any]):
 async def acheck_city(city_name: str) -> bool:
     "Проверяет, есть ли название в базе OpenWeatherMap по API"
     async with aiohttp.ClientSession() as session:
-        async with session.get(f"http://api.openweathermap.org/geo/1.0/direct?q={city_name}&limit=5&appid={OPEN_WEATHER_MAP_TOKEN}") as response:
+        async with session.get(f"https://api.openweathermap.org/geo/1.0/direct?q={city_name}&limit=5&appid={OPEN_WEATHER_MAP_TOKEN}") as response:
             if response.status == 200:
                 return True
             else:
@@ -18,7 +18,7 @@ async def acheck_city(city_name: str) -> bool:
 async def get_city_temperature(city_name: str) -> float | None:
     "Получает температуру города по API OpenWeatherMap"
     async with aiohttp.ClientSession() as session:
-        async with session.get(f"http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={OPEN_WEATHER_MAP_TOKEN}") as response:
+        async with session.get(f"https://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={OPEN_WEATHER_MAP_TOKEN}") as response:
             if response.status == 200:
                 data = await response.json()
                 return data['main']['temp'] - 273.15  # Convert Kelvin to Celsius

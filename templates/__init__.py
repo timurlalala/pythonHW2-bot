@@ -44,13 +44,13 @@ class SetProfileMessageTemplates:
 class UsageMessageTemplates:
     CHECK_PROGRESS = (
         "📊 Прогресс:\nВода:\n- Выпито: {consumed_water} мл из {target_water} мл."
-        "\n- Осталось: {target_water-consumed_water} мл.\n\n"
+        "\n- Осталось: {water_left} мл.\n\n"
         "Калории:\n- Потреблено: {consumed_calories} ккал из {target_calories} ккал.\n"
-        "- Сожжено: {burned_calories} ккал.\n- Баланс: {consumed_calories-burned_calories} ккал."
+        "- Сожжено: {burned_calories} ккал.\n- Баланс: {balance_calories} ккал."
     )
 
     LOG_WATER = (
-        "Выпито {amount} мл воды. Осталось до нормы: {target_water-consumed_water} мл."
+        "Выпито {amount} мл воды. Осталось до нормы: {water_left} мл."
     )
     LOG_WATER_ERROR = (
         "Неверный формат ввода. Введите количество выпитой воды в миллилитрах.\n"

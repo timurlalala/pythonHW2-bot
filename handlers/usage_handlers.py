@@ -24,10 +24,12 @@ async def log_water(message: Message, state: FSMContext):
         return
 
     state_data = await state.get_data()
-    consumed_water = state_data['consumed_water'] + amount
+    state_data['consumed_water'] += amount
 
-    await state.update_data({'consumed_water': consumed_water})
-    ans = UsageMessageTemplates.LOG_WATER.format(amount=amount, **state_data)
+    await state.update_data(state_data)
+    balance_calories = state_data['consumed_calories'] - state_data['burned_calories']
+    water_left = state_data['target_water'] - state_data['consumed_water']
+    ans = UsageMessageTemplates.LOG_WATER.format(amount=amount, balance_calories=balance_calories, water_left=water_left, **state_data)
     await message.answer(ans)
 
 
@@ -40,10 +42,11 @@ async def log_water(message: Message, state: FSMContext):
         return
 
     state_data = await state.get_data()
-    consumed_water = state_data['consumed_water'] + amount
+    state_data['consumed_water'] += amount
 
-    await state.update_data({'consumed_water': consumed_water})
-    ans = UsageMessageTemplates.LOG_WATER.format(amount=amount, **state_data)
+    await state.update_data(state_data)
+    water_left = state_data['target_water'] - state_data['consumed_water']
+    ans = UsageMessageTemplates.LOG_WATER.format(amount=amount, water_left=water_left, **state_data)
     await message.answer(ans)
 
 
